@@ -1,0 +1,79 @@
+---
+title: "ADF&G Quarto Template"
+project:
+  type: manuscript
+author: 
+
+  - name: Jane Doe
+    email: Jane.Deo@alaska.gov
+    roles:
+      - Lead investigator
+    affiliations:
+      - Alaska Department of Fish and Game
+      - Division of Commercial Fisheries
+      
+  - name: John Doe
+    email: John.Doe@alaska.gov
+    roles:
+      - Biometric Support
+    affiliations:
+      - Alaska Department of Fish and Game 
+      - Division of Sport Fish
+      
+keywords:
+  - Quarto
+  - Markdown
+  - standards
+  
+abstract: |
+  The Alaska Department of Fish and Game currently lacks formatting standards for HTML rendered documents. This document will serve as a template for Quarto developed HTML documents produced by staff.  
+
+date: last-modified
+
+format:
+  html: 
+    code-tools: 
+      source: https://github.com/KyleGatt/Age-Allocation-Assessment
+    toc: true
+    comments:
+      hypothesis: true
+    theme: journal
+    font-family: Times New Roman
+
+embed-resources: true
+editor: visual
+---
+
+![](Formatting/ADFG%20Logo.jpg){fig-align="center" width="293"}
+
+<center>
+
+*This document is a draft and has not undergone review or approval through the Alaska Department of Fish and Game’s statewide publications System. Its contents are preliminary and subject to change.*
+
+<center>
+
+```{r, echo=F, include=F}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(palmerpenguins)
+
+```
+
+# Background
+
+# Methods
+
+```{r, echo=F, message=F}
+
+```
+
+# Results
+
+# Recommendations
+
+# Acknowledgements
+
+# References Cited
+
+# Appendices
