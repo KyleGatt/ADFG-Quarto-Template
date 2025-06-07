@@ -26,8 +26,8 @@ keywords:
   - standards
   
 abstract: |
-  The Alaska Department of Fish and Game currently lacks formatting standards for HTML rendered documents. This document will serve as a template for Quarto developed HTML documents produced by staff.  
-
+  This document provides a standardized template for Quarto-rendered reports produced by staff of the Alaska Department of Fish and Game (ADF&G). It is intended to streamline the creation of publication-quality HTML documents by offering pre-configured formatting, reusable code functions, and guidance aligned with departmental standards. The template includes tools and examples to support reproducible data analysis, effective integration of narrative and visual outputs, and adherence to best practices in scientific reporting. Designed for flexibility, the template can be adapted for various reporting needs, including internal memos and technical summaries. By promoting consistency, efficiency, and clarity, this resource aims to improve documentation workflows across ADF&G programs and facilitate more effective communication of scientific findings.
+    
 date: last-modified
 
 format:
@@ -38,7 +38,7 @@ format:
     comments:
       hypothesis: true
     theme: journal
-    font-family: Times New Roman
+    font: serif
 
 embed-resources: true
 editor: visual
@@ -48,27 +48,97 @@ editor: visual
 
 <center>
 
-*This document is a draft and has not undergone review or approval through the Alaska Department of Fish and Game’s statewide publications System. Its contents are preliminary and subject to change.*
+***This document is a draft and has not undergone review or approval through the Alaska Department of Fish and Game’s statewide publications system. Its contents are preliminary and subject to change.***
 
-<center>
+</center>
 
 ```{r, echo=F, include=F}
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(flextable) #to produce publication quality tables
 library(palmerpenguins)
+library(officer)
 
 ```
 
 # Background
 
+To do's:
+
+-refine CCS
+
+YAML notes:
+
+-   Manuscript type projects provide a clean header containing scholarly font matter that includes authors, affiliations, and an abstract.
+
+-   When adjusting contents within the YAML header, pay attention to the indentations as contents here are often hierarchical.
+
+-   The source code for your rendered document should be available via your github account. You can also provide a link to the sharepoint location were contents of your analyses may be available.
+
+-   If you would like to allow for commenting on the document, you will do so with the commenting command in the YAML header. Once rendered, you will find the commenting icon (\<) at the upper right of the document. To post comments, you will first need to create an account at [Hypothesis.is](https://web.hypothes.is/). This is a painless process that can extremely useful for those seeking peer-review edits for this type of document. You may turn this feature off by simply removing this option from the YAML header.
+
+-   The embed-resources argument generates a self-contained HTML file that is archivable and reproducible.
+
 # Methods
 
 ```{r, echo=F, message=F}
 
+
+ADFG_Tables<- function(data) {
+  # Create base flextable
+  ft <- flextable(data) %>%
+    theme_apa() %>%
+    padding(padding = 2, part = "footer") %>%
+    font(fontname = "Times New Roman", part = "all") %>%
+    fontsize(size=12, part="body")%>%
+    fontsize(size=9, part="footer")%>%
+    line_spacing(space = 1, part = "all") %>%
+    set_table_properties(layout = "autofit")%>%
+    align(align = "justify", part="footer")
+
+  # Detect column classes
+  col_classes <- sapply(data, class)
+
+  # Character columns → left align
+  char_cols <- names(col_classes)[col_classes == "character"]
+  if (length(char_cols) > 0) {
+    ft <- align(ft, j = char_cols, align = "left", part = "all")
+  }
+
+  # Factor columns → center align
+  factor_cols <- names(col_classes)[col_classes == "factor"]
+  if (length(factor_cols) > 0) {
+    ft <- align(ft, j = factor_cols, align = "center", part = "all")
+  }
+
+  # Numeric, double, integer → format and left align
+  num_cols <- names(col_classes)[col_classes %in% c("numeric", "double", "integer")]
+  if (length(num_cols) > 0) {
+    ft <- colformat_num(ft, j = num_cols, big.mark = ",")
+    ft <- align(ft, j = num_cols, align = "right", part = "all")
+  }
+
+  return(ft)
+}
+  
+```
+
+```{r, echo=F}
+#| label: tbl-1
+#| tbl-cap: This is a referenceable table produced with flextable.
+
+
+head(penguins)%>%
+  ADFG_Tables()%>%
+  add_footer_lines("This is an unoriginal footnote")
 ```
 
 # Results
+
+Flextable function
+
+insert ggplot theme
 
 # Recommendations
 
@@ -76,4 +146,28 @@ library(palmerpenguins)
 
 # References Cited
 
+Maybe provide some clarity on how to integrate a bibtex file into quarto documents. I prefer zotero which requires more of a manual process here.
+
 # Appendices
+
+The code chunk below will produce an interactive table that allows a user to view and download your data.
+
+```{r}
+
+palmerpenguins::penguins%>% DT::datatable(
+          filter = "top",
+          extensions = "Buttons",
+          options = list(dom = 'Bfrtip',
+                         buttons =
+                           list(
+                             'copy',
+                             'print',
+                             list(
+                               extend = 'collection',
+                               buttons = c('csv', 'excel'),
+                               text = 'Download'
+                             )
+                           ))
+        )
+
+```
